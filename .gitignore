@@ -1,9 +1,0 @@
-# Ignore ipynb checkpoints
-.ipynb_checkpoints/
-
-# Ignore all compiled python code
-*.pyc
-__pycache__/
-
-# Don't upload the data
-data/
