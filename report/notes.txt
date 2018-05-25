@@ -19,6 +19,8 @@ exists for the area of interest.
 - classification can also help with satellite imaging of forests with lots of different trees
 https://link.springer.com/article/10.1007/s10342-011-0577-2
 
+https://ieeexplore.ieee.org/document/7154873/
+
 - Blackard et al. assembled data set [...]
 
 - classification can also help with identifying unusual developments, such as human interventions
