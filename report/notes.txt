@@ -52,6 +52,33 @@ students.
 - Random forest analysis
     - accuracy vs number of trees
     - max depth
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     - max features
     - ... also learn about random forests. seriously.
 
