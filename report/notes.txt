@@ -1,0 +1,57 @@
+MOTIVATION
+-------------------------
+
+... why is this dataset/type of prediction of interest?
+
+[general intro of why people use machine learning for everything?]
+
+Assessing natural resource information accurately is essential for land 
+monitoring and managing purposes. Among typically recorded natural resources, the cover type of
+forests is one of the most basic quantities [ref Blackard], and the precise determination of the
+latter forms the basis for assessing floral and faunal development [ref ?].
+
+Forest cover type data is routinely collected through either land-based personnel or
+remotely sensed data, using for example satellite images [ref Landsat]. However, the feasibility
+of these methods may be limited due to cost and time overhead, leading to the development of
+predictive cover type estimation [ref Blackard] based on other geographical information that
+exists for the area of interest.
+
+- classification can also help with satellite imaging of forests with lots of different trees
+https://link.springer.com/article/10.1007/s10342-011-0577-2
+
+- Blackard et al. assembled data set [...]
+
+- classification can also help with identifying unusual developments, such as human interventions
+or tree diseases...
+
+- The publicly available covertype dataset has spurned many investigations into classification
+algorithms and the relative simplicitly of the data makes it an ideal problem for machine learning
+students.
+
+
+- preprocessing:
+    - look at how features relate to classes
+    - add extra features, see how it affects classification
+    - take fixed ratio of all classes for training
+    
+    - PCA
+        - naive PCA, observe accuracy as function of number of components
+        - Bayes PCA
+    
+    - remove outliers:
+        - specific values
+        - every value lower than 10%, and higher than 90% -> can play with percentages
+            -> reducing data reduces accuracy - get about the same accuracy as with full data
+               at 0.001 and 0.999.
+
+    - feature engineering
+        - soil family (instead of binary)? what if there is more than one soil type
+          for one class?
+        - wilderness area family (instead of binary) - does that actually help?               
+               
+- Random forest analysis
+    - accuracy vs number of trees
+    - max depth
+    - max features
+    - ... also learn about random forests. seriously.
+
