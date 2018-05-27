@@ -45,11 +45,14 @@ students.
         - every value lower than 10%, and higher than 90% -> can play with percentages
             -> reducing data reduces accuracy - get about the same accuracy as with full data
                at 0.001 and 0.999.
+               
+    - fit histograms of continuous variables?
 
     - feature engineering
         - soil family (instead of binary)? what if there is more than one soil type
           for one class?
-        - wilderness area family (instead of binary) - does that actually help?               
+        - wilderness area family (instead of binary) - does that actually help?
+                     
                
 - Random forest analysis
     - accuracy vs number of trees
