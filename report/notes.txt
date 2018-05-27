@@ -34,7 +34,7 @@ students.
 - preprocessing:
     - look at how features relate to classes
     - add extra features, see how it affects classification
-    - take fixed ratio of all classes for training
+    - take fixed ratio of all classes for validation
     
     - PCA
         - naive PCA, observe accuracy as function of number of components
