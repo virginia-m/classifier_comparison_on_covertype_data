@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import train_test_split
 
 def construct_confusion_matrix(actual, predicted, dim=7):
     '''
@@ -171,8 +173,78 @@ def generate_cross_validation_datasets(full_data, labels, kfold=10, training_per
     
     return datasets
 
+def class_count_split(X, y, count=250):
+    '''
+    Parameters:
+        X = data
+        y = labels
+        
+        count: number of each class to keep in training set, default 250, only 
+                used if STYLE='equal'
+                    
+    Returns:
+        X_train, y_train, X_test, y_test
+    '''   
+    
+    #unique classes
+    classes = np.unique(y)
+    
+    #empty array to store random pick indices 
+    picks = np.empty([count, np.shape(classes)[0]])
+
+    #loop through each class and randomly select <count> representatives
+    for i, this_class in enumerate(classes):
+        want = np.where(y == this_class)[0]
+        picks[:,i] = np.random.choice(want,size=count, replace=False)
+
+    #sort pick indices by the order they appear in the original table
+    picks = np.sort(picks.flatten()).astype(int)
+    
+    X_test = X[picks,:]
+    y_test = y[picks]
+    
+    X_train = np.delete(X,picks,axis=0)
+    y_train = np.delete(y,picks)  
+        
+    return X_train, y_train, X_test, y_test
+    
+def split_dataset(X, y, style='prop', count=250, test_size=0.1):
+    '''
+    Parameters:
+        X = data
+        y = labels
+        
+        style: 'prop' = classes proportionally represented in test dataset based
+                        on proportions in training dataseg
+                'equal' = equal number of class counts in training set
+                'random' = random test/training partition
+        
+        count: number of each class to keep in training set, default 250, only 
+                used if STYLE='equal'
+        
+        test_size: fraction of dataset used for test set, default 0.1, only used 
+                    if STYLE='prop' or 'random'
+                    
+    Returns:
+        X_train, y_train, X_test, y_test
+    '''
+    
+    if style=='equal':
+        X_train, y_train, X_test, y_test = class_count_split(X,y,count=count)
+        
+    if style=='prop':
+        sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size)
+        for train_index, test_index in sss.split(X, y):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            
+    if style=='random':
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+            
+    return X_train, y_train, X_test, y_test    
+
 def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_percentage=0.9, kwargs=None,
-                              average_fits=True, fit_percentage=0.9):
+                              average_fits=True, fit_percentage=0.9, count=250, test_size=0.1, style='prop'):
     """
         This function evaluates a classifier using k-fold cross-validation
         on a given dataset and by calculating confusion matrices for each fold.
@@ -209,10 +281,15 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
         kwargs = {}
     _classifier = classifier(**kwargs)
     
-    datasets = generate_cross_validation_datasets(full_data, labels, kfold, training_percentage)
+    #datasets = generate_cross_validation_datasets(full_data, labels, kfold, training_percentage)
     
     confusion_matrices = []
-    for (train_labels, train_data, validation_labels, validation_data) in datasets:
+    #for (train_labels, train_data, validation_labels, validation_data) in datasets:
+    for i in range(kfold):
+    	
+        train_data, train_labels, validation_data, validation_labels = \
+        split_dataset(full_data, labels, style=style, count=count, test_size=test_size)
+                
         # Fit the classifier using the training data, then predict using the validation data.
         _classifier = _classifier.fit(train_data, train_labels)
         predictions = _classifier.predict(validation_data)
