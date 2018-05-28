@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 def construct_confusion_matrix(actual, predicted, dim=7):
     '''
@@ -208,7 +209,7 @@ def class_count_split(X, y, count=250):
         
     return X_train, y_train, X_test, y_test
     
-def split_dataset(X, y, style='prop', count=250, test_size=0.1):
+def split_dataset(X, y, style='prop', count=250, test_size=0.1, regularize=False):
     '''
     Parameters:
         X = data
@@ -240,11 +241,18 @@ def split_dataset(X, y, style='prop', count=250, test_size=0.1):
             
     if style=='random':
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+        
+    if regularize==True:
+        scaler = StandardScaler()  
+        scaler.fit(X_train) # supposed to fit only on training data 
+        X_train = scaler.transform(X_train)  
+        X_test = scaler.transform(X_test) # apply same transformation to test data
             
     return X_train, y_train, X_test, y_test    
 
 def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_percentage=0.9, kwargs=None,
-                              average_fits=True, fit_percentage=0.9, count=250, test_size=0.1, style='prop'):
+                              average_fits=True, fit_percentage=0.9, count=250, test_size=0.1, style='prop', 
+                              regularize=False):
     """
         This function evaluates a classifier using k-fold cross-validation
         on a given dataset and by calculating confusion matrices for each fold.
@@ -288,7 +296,7 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
     for i in range(kfold):
     	
         train_data, train_labels, validation_data, validation_labels = \
-        split_dataset(full_data, labels, style=style, count=count, test_size=test_size)
+        split_dataset(full_data, labels, style=style, count=count, test_size=test_size, regularize=regularize)
                 
         # Fit the classifier using the training data, then predict using the validation data.
         _classifier = _classifier.fit(train_data, train_labels)
