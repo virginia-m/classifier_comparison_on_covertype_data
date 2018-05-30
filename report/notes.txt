@@ -65,7 +65,7 @@ students.
     
     
     
-    
+J. Blackard et al, who created and published the dataset in 1998, performed comparative classification studies using both a linear discriminant analysis and an artificial neural network with backpropagation. The former method yielded a classification accuracy of 58%, while their neural net, consisting of a single hidden layer, yielded 70%. Their work was motivated by recent successes in applying neural nets in natural resource modeling, and has since spurned many more investigations into classification techniques based on their original dataset to push towards higher accuracies.
     
     
     
