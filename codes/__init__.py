@@ -6,5 +6,7 @@ from .evaluations import construct_confusion_matrix, \
                         split_dataset
                         
 from .metrics_wrapper import metrics_wrapper 
+
+from .preprocessing import create_features_and_labels, load_covertype_data
                        
 
