@@ -119,21 +119,28 @@ def highlight_max(s):
     
 def color_max(s):
     is_max = s == s.max()
-    return ['color: red' if v else '' for v in is_max]    
-
-def metrics_wrapper(conf, classes, do_display=False):
+    return ['color: blue' if v else '' for v in is_max]   
+    
+def color_min(s):
+    is_min = s == s.min()
+    return ['color: red' if v else '' for v in is_min]    
+    
+def metrics_wrapper(conf, classes, runtime=None, do_display=False):
 
     aconf=np.mean(conf, axis=0) if conf.ndim==3 else conf
 
     acc, pre, rec, fme, class_pre, class_rec, class_fme = classy_metrics(aconf)
     total_metrics, class_metrics, confusion_frame = format_metrics(acc, pre, rec, fme, class_pre, class_rec, class_fme, aconf, classes)
     
+    if runtime != None:
+       total_metrics.insert(0, 'Avg Runtime', runtime)
+    
     if do_display==True:
         print('Average/overall metrics:')
         display(total_metrics) 
         print('Class-specific metrics:')
         display(class_metrics.style.applymap(color_good_bad, subset=['Precision', 'Recall', 'F-Meas']))
-        print('Confusion matrix (yellow = col max; red = row max):')
+        print('Confusion matrix (yellow = col max; blue = row max):')
         display(confusion_frame.style.apply(highlight_max, axis=0).apply(color_max, axis=1))
     
     return total_metrics, class_metrics, confusion_frame

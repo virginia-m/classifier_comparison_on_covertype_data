@@ -1,0 +1,3 @@
+,shuffle,Run Time,loss,n_iter,Average F-Meas,Average Precision,Average Recall,Overall Accuracy
+0,False,144.8804349899292,0.43711745266885904,52.0,0.68,0.76,0.65,0.82
+1,True,223.50360798835754,0.4094009606253309,80.0,0.69,0.78,0.65,0.83

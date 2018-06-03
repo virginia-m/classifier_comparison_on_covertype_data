@@ -4,6 +4,7 @@ from matplotlib.gridspec import GridSpec
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import time
 
 def construct_confusion_matrix(actual, predicted, dim=7):
     '''
@@ -251,8 +252,7 @@ def split_dataset(X, y, style='prop', count=250, test_size=0.1, regularize=False
     return X_train, y_train, X_test, y_test    
 
 def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_percentage=0.9, kwargs=None,
-                              average_fits=True, fit_percentage=0.9, count=250, test_size=0.1, style='prop', 
-                              regularize=False):
+                              count=250, test_size=0.1, style='prop', regularize=False):
     """
         This function evaluates a classifier using k-fold cross-validation
         on a given dataset and by calculating confusion matrices for each fold.
@@ -284,14 +284,22 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
         ----------------------
         confusion_matrices : list
             Python list containing the confusion matrices for each fold in the cross-validation.
+            
+        runtimes : NumPy array
+        	Array of runtimes for each cross-validation cycle, including the time for 
+        	splitting the data into training and test sets
     """
     if kwargs is None:
         kwargs = {}
+
     confusion_matrices = []
     classifiers = []
-    #for (train_labels, train_data, validation_labels, validation_data) in datasets:
+    runtimes = np.zeros(kfold)
+    
     for i in range(kfold):
+        start_time = time.time()
     	
+    	#split dataset into training and test set
         train_data, train_labels, validation_data, validation_labels = \
         split_dataset(full_data, labels, style=style, count=count, test_size=test_size,
                       regularize=regularize)
@@ -300,9 +308,12 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
         _classifier = classifier(**kwargs)
         _classifier = _classifier.fit(train_data, train_labels)
         predictions = _classifier.predict(validation_data)
-            
+        
+        # Compute the confusion matrix and store the results
         confusion_matrix = construct_confusion_matrix(validation_labels, predictions)
         confusion_matrices.append(confusion_matrix)
         classifiers.append(_classifier)
+        runtimes.append(time.time() - start_time)
     
-    return confusion_matrices, classifiers
+    return confusion_matrices, runtimes, classifiers
+

@@ -1,0 +1,3 @@
+,nesterovs_momentum,Run Time,loss,n_iter,Average F-Meas,Average Precision,Average Recall,Overall Accuracy
+0,False,231.25131106376648,0.40400257869147566,86.0,0.7,0.78,0.66,0.83
+1,True,218.758239030838,0.4024264356300557,79.0,0.7,0.77,0.66,0.83
