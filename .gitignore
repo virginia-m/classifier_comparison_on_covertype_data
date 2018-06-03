@@ -13,3 +13,6 @@ data/
 
 # Ignore all ipynb checkpoints
 .ipynb_checkpoints/
+
+# Ignore figure asses
+figure-making/

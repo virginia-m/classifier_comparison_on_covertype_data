@@ -7,6 +7,7 @@ from .evaluations import construct_confusion_matrix, \
                         
 from .metrics_wrapper import metrics_wrapper 
 
-from .preprocessing import create_features_and_labels, load_covertype_data
+from .preprocessing import get_features_and_labels, \
+                           load_covertype_data, compress_and_engineer_features
                        
 

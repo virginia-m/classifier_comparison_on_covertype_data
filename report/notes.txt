@@ -1,89 +1,90 @@
-MOTIVATION
--------------------------
-
-... why is this dataset/type of prediction of interest?
-
-[general intro of why people use machine learning for everything?]
-
-Assessing natural resource information accurately is essential for land 
-monitoring and managing purposes. Among typically recorded natural resources, the cover type of
-forests is one of the most basic quantities [ref Blackard], and the precise determination of the
-latter forms the basis for assessing floral and faunal development [ref ?].
-
-Forest cover type data is routinely collected through either land-based personnel or
-remotely sensed data, using for example satellite images [ref Landsat]. However, the feasibility
-of these methods may be limited due to cost and time overhead, leading to the development of
-predictive cover type estimation [ref Blackard] based on other geographical information that
-exists for the area of interest.
-
-- classification can also help with satellite imaging of forests with lots of different trees
-https://link.springer.com/article/10.1007/s10342-011-0577-2
-
-https://ieeexplore.ieee.org/document/7154873/
-
-- Blackard et al. assembled data set [...]
-
-- classification can also help with identifying unusual developments, such as human interventions
-or tree diseases...
-
-- The publicly available covertype dataset has spurned many investigations into classification
-algorithms and the relative simplicitly of the data makes it an ideal problem for machine learning
-students.
-
-
-- preprocessing:
-    - look at how features relate to classes
-    - add extra features, see how it affects classification
-    - take fixed ratio of all classes for validation
-    
-    - PCA
-        - naive PCA, observe accuracy as function of number of components
-        - Bayes PCA
-    
+PREPROCESSING
+---------------------------------    
     - remove outliers:
         - specific values
         - every value lower than 10%, and higher than 90% -> can play with percentages
             -> reducing data reduces accuracy - get about the same accuracy as with full data
                at 0.001 and 0.999.
                
-    - fit histograms of continuous variables?
-
-    - feature engineering
-        - soil family (instead of binary)? what if there is more than one soil type
-          for one class?
-        - wilderness area family (instead of binary) - does that actually help?
-                     
                
 - Random forest analysis
-    - accuracy vs number of trees
-    - max depth
+    - ?  
     
-    
-    
-    
-    
-    
-    
-    
-J. Blackard et al, who created and published the dataset in 1998, performed comparative classification studies using both a linear discriminant analysis and an artificial neural network with backpropagation. The former method yielded a classification accuracy of 58%, while their neural net, consisting of a single hidden layer, yielded 70%. Their work was motivated by recent successes in applying neural nets in natural resource modeling, and has since spurned many more investigations into classification techniques based on their original dataset to push towards higher accuracies.
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    - max features
-    - ... also learn about random forests. seriously.
+RANDOM FOREST THEORY
+-----------------------------------
 
+Random forests are an ensemble learning technique based on multiple decision trees \cite{breiman_randomforest, ho}. Decision trees are incredibly powerful algorithms for data mining, as they can learn any given data structure arbitrarily well -- but precisely this fact results in rather poor predictive capabilities \cite{elements_stats_book}. 
+The combination of multiple individual trees however, provides means to mitigate the overfitting behaviour and offers better predictive performance than could be obtained from any of the individual trees.
+
+During the training phase of a random forest, multiple decision trees are fitted on subsamples of the training data. This procedure is called bootstrap-aggregating or bagging \cite{breiman_bagging} and is a form of model-averaging. For a set of models trained on $B$ sub-samples of the dataset, the individual predictions $\hat{f}_B$ for a given observation $x$ form the bagged prediction $\hat{f}_{\mathrm{bag}}$ via:
+
+bagging equation cite hastie book again:
+P_bag(C | x) = 1/B \sum_b^B P_b (x)
+
+
+Random forests combine this bootstrap-aggregation with additional \emph{feature bagging}, also known as the random subspace method [ho_subspace]. Here, the individual models are constructed by systematically selecting random subsets of input feature vector. 
+
+For each random subsample of features and training data, a decision tree is grown. In this work, trees were built using the CART algorithm \cite{breiman_cart}. For a given input of feature vectors and labels, a decision tree recursively partitions the space such that samples with the same label are grouped together. The recursion ends when either all the data has been partitioned or if an early-stopping criterion was reached, such as for example a maximum tree depth. The split decision at each node in the tree is based on the \emph{impurity} that the split causes, which is a measure of misclassification entropy. In this work, we consider the Gini impurity, a measure of the likelihood of an incorrect classification which is defined for a given node $N$ as follows:
+
+G_b(N, x) = \sum_i P(C_i |x) * (1 - P(C_i | x))
+
+where the sum is taken over all possible outcomes. The Gini impurity is lower bounded by zero, which is the value it will assume if all the data $x$ belong to a single class. Based on the Gini impurities calculated at each node, we can extract information about how relevant a given feature was in the splitting process by adding up the Gini impurity decreases for that feature over all the trees in the forest. This is also called Gini importance \cite{Breiman_randomforest}.
+
+A sample random forest using a small fraction of the covertype dataset is shown in Fig. \ref{random_forest_figure}. The forest consists of two trees, and the data contains two classes only (Krummholz and Ponderosa Pine), with three features for each point. The decision paths were visualised using the graphviz package. At each node, the split is based on the minimum Gini impurity. The trees stop growing when a Gini impurity of zero is reached. Based on the two trees in this example, the most relevant features can be extracted.
+
+
+\caption{Exemplary random forest using the covertype dataset. The forest consists of two trees, and the data contains ten observations from two classes and three features. Both trees use a different subset of features and data. Each split decision is made based on the minimum Gini impurity. By adding up the impurity decrease for each feature, the Gini importance of each feature can be extracted. Here, the importance of the wilderness area feature is zero, as it has not been used in the tree-building processes.}
+
+
+
+RANDOM FOREST EXPERIMENT
+-----------------------------------
+
+The hyperparameter of random forests are a combination of the hyperparameters of the individual decision trees, and those determining the random sampling routine. 
+Arguably the most relevant parameter for decision trees are:
+Maximum tree depth.
+how deep to grow the tree. deeper trees will generally fit the data better, however they are also more likely to overfit
+mininum impurity decrease
+the minimum decrease in impurity when looking for the next split of a node. setting this to a high number could prevent the node from splitting if the expected decrease cannot reach that number.
+minimum samples leaf
+the minimum number of samples that are required to form a leaf. if not enough samples resulted from the last split, splitting continues.
+max features
+the number of features to consider when looking for the best split.
+
+for random forests:
+number of trees
+how many trees to use. The classification accuracy is expected to increase with the number of trees, and Breiman has shown that in the limit of B -> \infty the misclassification error converges to a minimal value, i.e. adding more trees will not increase overfitting.
+bootstrap
+whether or not to use bootstrap samples (bagging).
+
+In this work, we have used the random forest implementation in \texttt{scikit-learn} which offers additional tuning parameters for \emph{e.g.} the impurity criterion (other than Gini impurity) and impurity thresholds for early stopping in tree growth, instead of stopping at zero impurity. A full table of hyperparameters is given in table \ref{random_forest_table}.
+
+The set of optimal hyperparameters for this classifier was determined using a stratified, ten-fold cross validation approach with the classification accuracy as performance benchmark. Individual (continuous) parameter were scanned while keeping the remaining ones fixed, and we recorded the mean accuracy and runtime for each value. This process is visualised in Fig. \ref{random_forest_tuning}a.
+
+For most continuous parameters, we find that the achievable accuracy saturates quickly which is consistent with our expectations. For instance, increasing the number of trees in the forest beyond about 20 trees has virtually no effect on the accuracy - a sign that the misclassification error has converged. The maximum tree depth shows a similar behaviour, and more importantly, we observe no accuracy decrease as would be expected when overfitting becomes predominant. However, from these results we can conclude that the trees stop growing after about 30 successive nodes -- an observation that is confirmed by the saturation in runtime as well. Other parameters were tuned in a similar fashion, and their optimal values are listed in table \ref{random_forest_table}.
+
+Lastly, during the tuning process we also took a look at the feature importances rated by this classifier. As expected from our preliminary data exploration, the elevation seems indeed to be the most relevant parameter in split decisions, followed closely by our new, engineered features. This observation is consistent with the increase in accuracy that we observed for all classifiers after adding those features.
+
+
+\caption{Random forest parameter tuning and feature relevance. \textbf{a} shows exemplary tuning curves for the hyperparameter \texttt{n_estimators} (number of decision trees), \texttt{max_depth} (maximum tree depth) and \texttt{max_features} (maximum number of features per split decision). Plotted are accuracy and runtime, averaged over ten folds in cross-validation. Error bars represent standard deviations of those averages. \textbf{b} The ten-fold averaged feature importance as rated by the classifier. Again, error bars represent standard deviations from those averages.}
+
+
+
+
+breiman_randomforest
+Breiman L (2001). "Random Forests". Machine Learning. 45 (1): 5–32. doi:10.1023/A:1010933404324.
+
+breiman_cart
+L. Breiman, J. Friedman, R. Olshen, and C. Stone. Classification and Regression Trees. Wadsworth, Belmont, CA, 1984
+
+ho_rf
+Ho, Tin Kam (1995). Random Decision Forests (PDF). Proceedings of the 3rd International Conference on Document Analysis and Recognition, Montreal, QC, 14–16 August 1995. pp. 278–282
+
+ho_subspace
+Ho, Tin Kam (1998). "The Random Subspace Method for Constructing Decision Forests" (PDF). IEEE Transactions on Pattern Analysis and Machine Intelligence. 20 (8): 832–844.
+
+breiman_bagging
+Breiman, Leo (1996). "Bagging predictors". Machine Learning. 24 (2): 123–140. CiteSeerX 10.1.1.32.9399 Freely accessible. doi:10.1007/BF00058655.
+
+elements_stats_book
+Hastie, Trevor; Tibshirani, Robert; Friedman, Jerome (2008). The Elements of Statistical Learning (2nd ed.). Springer. ISBN 0-387-95284-5.

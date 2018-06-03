@@ -258,7 +258,7 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
         on a given dataset and by calculating confusion matrices for each fold.
         
         This function generates a number of splitted datasets for training and validation
-        using an input (sparse) dataset.
+        using an input dataset.
         
         Parameters
         ----------------------
@@ -266,7 +266,7 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
             An instance of a classifier class that contains two methods named *fit* and
             *predict*, abiding to scikit-learn naming conventions.
         
-        full_data : sparse array
+        full_data : numpy array
             The dataset from which to draw samples for training and validation.
         
         kfold : integer, optional
@@ -287,22 +287,22 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
     """
     if kwargs is None:
         kwargs = {}
-    _classifier = classifier(**kwargs)
-    
-    #datasets = generate_cross_validation_datasets(full_data, labels, kfold, training_percentage)
-    
     confusion_matrices = []
+    classifiers = []
     #for (train_labels, train_data, validation_labels, validation_data) in datasets:
     for i in range(kfold):
     	
         train_data, train_labels, validation_data, validation_labels = \
-        split_dataset(full_data, labels, style=style, count=count, test_size=test_size, regularize=regularize)
+        split_dataset(full_data, labels, style=style, count=count, test_size=test_size,
+                      regularize=regularize)
                 
         # Fit the classifier using the training data, then predict using the validation data.
+        _classifier = classifier(**kwargs)
         _classifier = _classifier.fit(train_data, train_labels)
         predictions = _classifier.predict(validation_data)
             
         confusion_matrix = construct_confusion_matrix(validation_labels, predictions)
         confusion_matrices.append(confusion_matrix)
+        classifiers.append(_classifier)
     
-    return confusion_matrices
+    return confusion_matrices, classifiers
