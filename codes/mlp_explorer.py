@@ -36,7 +36,8 @@ def read_covtype(engineer=False):
     
     if engineer==True:
         data = c.load_covertype_data()
-        X, y = c.create_features_and_labels(data)
+        data_new = c.compress_and_engineer_features(data)
+        X, y = c.create_features_and_labels(data_new)
         
     else:
         data = fetch_covtype()
