@@ -1,0 +1,8 @@
+Confusion Matrix Index,Class,F-Meas,Precision,Recall
+0,Spruce/Fir,0.3,0.84,0.18
+1,Lodgepole Pine,0.73,0.61,0.9
+2,Ponderosa Pine,0.34,0.35,0.33
+3,Cottonwood/Willow,0.13,0.07,0.99
+4,Aspen,0.0,0.0,0.0
+5,Douglas-fir,0.0,0.0,0.0
+6,Krummholz,0.55,0.42,0.81

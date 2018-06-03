@@ -9,7 +9,8 @@ from .mcmetrics import metrics_wrapper, \
 						confusion_matrix, \
 						color_good_bad, \
 						highlight_max, \
-						color_max
+						color_max, \
+						color_min
 
 from .preprocessing import create_features_and_labels, \
 							load_covertype_data
