@@ -294,7 +294,7 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
 
     confusion_matrices = []
     classifiers = []
-    runtimes = np.zeros(kfold)
+    runtimes = []
     
     for i in range(kfold):
         start_time = time.time()
@@ -308,9 +308,10 @@ def cross_validate_classifier(classifier, full_data, labels, kfold=10, training_
         _classifier = classifier(**kwargs)
         _classifier = _classifier.fit(train_data, train_labels)
         predictions = _classifier.predict(validation_data)
-        
+
         # Compute the confusion matrix and store the results
-        confusion_matrix = construct_confusion_matrix(validation_labels, predictions)
+        confusion_matrix = construct_confusion_matrix(validation_labels.astype(int), \
+        predictions.astype(int))
         confusion_matrices.append(confusion_matrix)
         classifiers.append(_classifier)
         runtimes.append(time.time() - start_time)

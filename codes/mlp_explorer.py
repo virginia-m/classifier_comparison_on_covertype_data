@@ -37,7 +37,7 @@ def read_covtype(engineer=False):
     if engineer==True:
         data = c.load_covertype_data()
         data_new = c.compress_and_engineer_features(data)
-        X, y = c.create_features_and_labels(data_new)
+        X, y = c.get_features_and_labels(data_new)
         
     else:
         data = fetch_covtype()
@@ -136,7 +136,7 @@ def mlp_explore_param(param, values, X_train, y_train, X_test, y_test, args=None
             loss[i] = _classifier.loss_
             
             #construct confusion matrix and format metrics into dataframe
-            conf = c.construct_confusion_matrix(y_test-1, y_pred-1, dim=7)
+            conf = c.construct_confusion_matrix(y_test, y_pred, dim=7)
             df_total, df_class, df_conf = c.metrics_wrapper(conf, cnames, do_display=False)
 
             #initialise or append to main results output dataframe  
