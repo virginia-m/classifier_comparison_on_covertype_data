@@ -15,4 +15,8 @@ from .mcmetrics import metrics_wrapper, \
 from .preprocessing import create_features_and_labels, \
 							load_covertype_data
                        
+from .mlp_explorer import read_covtype, \
+							mlp_explore_param, \
+							mlp_explore_params, \
+							mlp_hyper_awesome
 
