@@ -1,6 +1,11 @@
+from __future__ import print_function, division
+import warnings
 import pandas as pd
 import numpy as np
-from pathlib import Path
+try:
+    from pathlib import Path
+except ImportError:
+    warnings.warn('Module pathlib not found - this module is not available in Python 2.')
 from sklearn.datasets import fetch_covtype
 from sklearn import naive_bayes as nb
 from sklearn import neural_network as nn
@@ -89,7 +94,8 @@ def mlp_explore_param(param, values, X_train, y_train, X_test, y_test, args=None
     
     #add input parameter to kwargs if necessary
     if param not in kwargs:
-        kwargs = {**kwargs, **{param:values[0]}}
+        #kwargs = {**kwargs, **{param:values[0]}}
+        kwargs[param] = values[0]
 
     #create blank output arrays    
     runtimes = np.zeros(np.shape(values)[0])
@@ -114,7 +120,7 @@ def mlp_explore_param(param, values, X_train, y_train, X_test, y_test, args=None
     else:
     
         print('Exploring param = '+param+' from '+str(values[0])+' to '+str(values[-1]))
-        print('Working on '+param+' = ', sep=' ', end='', flush=True)
+        #print('Working on '+param+' = ', sep=' ', end='', flush=True)
     
         #loop through input values for param
         for i, param_value in enumerate(values):
@@ -240,13 +246,16 @@ def mlp_explore_params(X_train, y_train, X_test, y_test, redo=False):
         #for these params, cycle value through the possible learning rates
         if param=='learning_rate_init' or param=='tol':
             for rate in learning_rates:
-                args = {**base_args, **{'learning_rate':rate}}
+                args = base_args.copy()
+                args['learning_rate'] = rate
                 df_totals = mlp_explore_param(param, values[i], X_train, y_train, X_test, y_test, args=args, redo=redo)
                 output.append(df_totals)
         
         #this param is only used for learning_rate=invscaling, so ensure that
         elif param=='power_t':
-            args = {**base_args, **{'learning_rate_init':0.1, 'learning_rate':'invscaling'}}
+            args = base_args.copy()
+            args['learning_rate_init'] = 0.1
+            args['learning_rate'] = 'invscaling'
             df_totals = mlp_explore_param(param, values[i], X_train, y_train, X_test, y_test, redo=redo)
             output.append(df_totals)
             
