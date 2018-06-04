@@ -1,2 +1,1 @@
-# comp5318_assignment_2
-Literature for the assignment
+This folder contains some of the relevant literature on the covertype dataset and similar classification studies.
