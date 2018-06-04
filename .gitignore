@@ -16,3 +16,6 @@ data/
 
 # Ignore figure asses
 figure-making/
+
+# Ignore folder for old scripts
+legacy/
