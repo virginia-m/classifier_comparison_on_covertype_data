@@ -11,7 +11,7 @@ from sklearn import naive_bayes as nb
 from sklearn import neural_network as nn
 from IPython.core.display import display
 import time
-import codes as c
+import accessories as c
 
 def read_covtype(engineer=False):
     '''
